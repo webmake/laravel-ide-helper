@@ -10,6 +10,7 @@
 
 namespace Barryvdh\LaravelIdeHelper\Console;
 
+use App\Console\Kernel;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Str;
@@ -77,6 +78,16 @@ class ModelsCommand extends Command
      */
     public function fire()
     {
+        config()->set(
+            'database.connections.sqlite',
+            [
+                'driver' => 'sqlite',
+                'database' => ':memory:',
+            ]
+        );
+        config()->set('database.default', 'sqlite');
+
+        app(Kernel::class)->call('migrate');
         $filename = $this->option('filename');
         $this->write = $this->option('write');
         $this->dirs = array_merge(
